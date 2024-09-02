@@ -1,26 +1,25 @@
 class Solution {
 public:
-    int chalkReplacer(vector<int>& chalk, int initialChalkPieces) {
-        long long totalChalkNeeded = 0;
-        for (int studentChalkUse : chalk) {
-            totalChalkNeeded += studentChalkUse;
+    int chalkReplacer(vector<int>& chalk, int k) {
+        long long total_chalk = 0;
+        
+        // Calculate the total amount of chalk needed in one full round.
+        for (int c : chalk) {
+            total_chalk += c;
         }
         
-        int remainingChalk = initialChalkPieces % totalChalkNeeded;
+        // Reduce k by the total chalk modulo
+        k %= total_chalk;
         
-        for (int studentIndex = 0; studentIndex < chalk.size(); studentIndex++) {
-            if (remainingChalk < chalk[studentIndex]) {
-                return studentIndex;
+        // Identify the student who will run out of chalk
+        for (int i = 0; i < chalk.size(); i++) {
+            if (chalk[i] > k) {
+                return i;
             }
-            remainingChalk -= chalk[studentIndex];
+            k -= chalk[i];
         }
         
-        return 0;
+        // This line theoretically should never be reached.
+        return -1;
     }
 };
-static const int kds = []() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    return 0;
-}();
