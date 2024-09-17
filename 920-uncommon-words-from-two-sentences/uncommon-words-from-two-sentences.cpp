@@ -1,42 +1,36 @@
 class Solution {
 public:
-    vector<string> uncommonFromSentences(string s1, string s2) {
-        // we need to find unique occurences
-        string s = s1 + " " + s2;
-
-        cout<<s1.max_size();
-
-        // store all words from s
-        unordered_map<string,int> um;
-        string tmp="";
-        for(auto& val : s){ // similar to, i=0;i<s.size();i++
-            if(val == ' '){
-                um[tmp]++;
-                tmp = "";
-            }
-            else{
-                tmp += val; // denotes, val = s[i]
-            }
-        }
-        
-        // condition needed if empty string allowed
-        if(tmp != ""){
-            um[tmp]++;
-            tmp = "";
-        }
-
-        // check unique means single count
+    inline static vector<string> toStringVec(string& s){
+        stringstream ss(s);
         vector<string> ans;
-        for(auto& val:um){ // auto it=um.begin();it<um.end();it++
-
-            // val.first = apple, val.second = 2
-
-            if(val.second==1){
-                ans.emplace_back(val.first); // can use push_back also                
-            }
-
+        while (!ss.eof()){
+            string tmp;
+            ss>>tmp;
+            ans.push_back(tmp);
         }
-
+        ss.clear();
+        return ans;
+    }
+    static vector<string> uncommonFromSentences(string& s1, string& s2) {
+        auto ss1=toStringVec(s1);
+        auto ss2=toStringVec(s2);
+        unordered_map<string, int> freq;
+        freq.reserve(ss1.size()+ss2.size());
+        for(auto& s: ss1) freq[s]++;
+        for(auto& s: ss2) freq[s]++;
+        vector<string> ans;
+        for(auto& [s,f]: freq){
+            if(f==1) ans.push_back(s);
+        }
         return ans;
     }
 };
+
+
+
+auto init = []() {
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    return 'c';
+}();
