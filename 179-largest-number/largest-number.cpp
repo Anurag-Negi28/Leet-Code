@@ -1,68 +1,39 @@
+unsigned long long ten[19]={1};
 class Solution {
 public:
     string largestNumber(vector<int>& nums) {
-        // Sort the numbers using Tim Sort
-        timSort(nums);
-        // Concatenate sorted numbers to form the largest number
-        string largestNum;
-        for (int num : nums) {
-            largestNum += to_string(num);
+        int n=nums.size();
+        for(int i=1; i<19; i++)
+            ten[i]=ten[i-1]*10LL;
+        vector<int> idx(n), sz(n);
+        iota(idx.begin(), idx.end(), 0);
+        vector<string> s(n);
+        int SZ=0;
+        for(int i=0; i<n; i++){
+            s[i]=to_string(nums[i]);
+            sz[i]=s[i].size();
+            SZ+=sz[i];
         }
-        // Handle the case where the largest number is zero
-        return largestNum[0] == '0' ? "0" : largestNum;
-    }
-
-private:
-    const int RUN = 32;
-
-    void insertionSort(vector<int>& nums, int left, int right) {
-        for (int i = left + 1; i <= right; ++i) {
-            int temp = nums[i];
-            int j = i - 1;
-            while (j >= left && compare(temp, nums[j])) {
-                nums[j + 1] = nums[j];
-                --j;
-            }
-            nums[j + 1] = temp;
-        }
-    }
-
-    void merge(vector<int>& nums, int left, int mid, int right) {
-        vector<int> leftArr(nums.begin() + left, nums.begin() + mid + 1);
-        vector<int> rightArr(nums.begin() + mid + 1, nums.begin() + right + 1);
-
-        int i = 0, j = 0, k = left;
-        while (i < leftArr.size() && j < rightArr.size()) {
-            if (compare(leftArr[i], rightArr[j])) {
-                nums[k++] = leftArr[i++];
-            } else {
-                nums[k++] = rightArr[j++];
-            }
-        }
-        while (i < leftArr.size()) nums[k++] = leftArr[i++];
-        while (j < rightArr.size()) nums[k++] = rightArr[j++];
-    }
-
-    void timSort(vector<int>& nums) {
-        int n = nums.size();
-        // Sort small runs with insertion sort
-        for (int i = 0; i < n; i += RUN) {
-            insertionSort(nums, i, min(i + RUN - 1, n - 1));
-        }
-        // Merge sorted runs
-        for (int size = RUN; size < n; size = 2 * size) {
-            for (int left = 0; left < n; left += 2 * size) {
-                int mid = left + size - 1;
-                int right = min(left + 2 * size - 1, n - 1);
-                if (mid < right) {
-                    merge(nums, left, mid, right);
-                }
-            }
-        }
-    }
-
-    bool compare(int firstNum, int secondNum) {
-        return to_string(firstNum) + to_string(secondNum) >
-               to_string(secondNum) + to_string(firstNum);
+        sort(idx.begin(), idx.end(), [&](int i,  int j){
+            int len_i=sz[i], len_j=sz[j];
+            unsigned long long x=nums[i], y=nums[j], X=x*ten[len_j], Y=y*ten[len_i];
+            return X+y>Y+x;
+        });
+        if (nums[idx[0]]==0) return "0";
+        string ans;
+        ans.reserve(SZ);
+        for(int i=0; i<n; i++)
+            ans+=s[idx[i]];
+        return ans;
     }
 };
+
+
+
+
+auto init = []() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    return 'c';
+}();
