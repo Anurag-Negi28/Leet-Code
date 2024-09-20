@@ -1,29 +1,33 @@
 class Solution {
 public:
     string shortestPalindrome(string s) {
-        int count = kmp(string(s.rbegin(), s.rend()), s);
-        return string(s.rbegin(), s.rend()).substr(0, s.length() - count) + s;
-    }
+        // Create reversed string
+        string rev_s = s;
+        reverse(rev_s.begin(), rev_s.end());
 
-private:
-    int kmp(const string &txt, const string &patt) {
-        string newString = patt + '#' + txt;
-        vector<int> pi(newString.length(), 0);
-        int i = 1, k = 0;
-        while (i < newString.length()) {
-            if (newString[i] == newString[k]) {
-                k++;
-                pi[i] = k;
+        // Combine original and reversed strings with a delimiter
+        string temp = s + "#" + rev_s;
+
+        // Initialize LPS (Longest Proper Prefix which is also Suffix) array
+        vector<int> lps(temp.length(), 0);
+
+        // Compute LPS array
+        int len = 0, i = 1;
+        while (i < temp.length()) {
+            if (temp[i] == temp[len]) {
+                lps[i] = ++len;
                 i++;
+            } else if (len > 0) {
+                len = lps[len - 1];
             } else {
-                if (k > 0) {
-                    k = pi[k - 1];
-                } else {
-                    pi[i] = 0;
-                    i++;
-                }
+                i++;
             }
         }
-        return pi.back();
+
+        // Extract the non-palindrome part, reverse it, and add to the front
+        string add = s.substr(lps.back());
+        reverse(add.begin(), add.end());
+
+        return add + s;
     }
 };
