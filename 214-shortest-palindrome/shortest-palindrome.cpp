@@ -1,40 +1,29 @@
 class Solution {
 public:
     string shortestPalindrome(string s) {
-        // Reverse the original string
-        string reversedString = string(s.rbegin(), s.rend());
-
-        // Combine the original and reversed strings with a separator
-        string combinedString = s + "#" + reversedString;
-
-        // Build the prefix table for the combined string
-        vector<int> prefixTable = buildPrefixTable(combinedString);
-
-        // Get the length of the longest palindromic prefix
-        int palindromeLength = prefixTable[combinedString.length() - 1];
-
-        // Construct the shortest palindrome by appending the reverse of the
-        // suffix
-        string suffix = reversedString.substr(0, s.length() - palindromeLength);
-        return suffix + s;
+        int count = kmp(string(s.rbegin(), s.rend()), s);
+        return string(s.rbegin(), s.rend()).substr(0, s.length() - count) + s;
     }
 
 private:
-    // Helper function to build the KMP prefix table
-    vector<int> buildPrefixTable(const string& s) {
-        vector<int> prefixTable(s.length(), 0);
-        int length = 0;
-
-        // Build the table by comparing characters
-        for (int i = 1; i < s.length(); i++) {
-            while (length > 0 && s[i] != s[length]) {
-                length = prefixTable[length - 1];
+    int kmp(const string &txt, const string &patt) {
+        string newString = patt + '#' + txt;
+        vector<int> pi(newString.length(), 0);
+        int i = 1, k = 0;
+        while (i < newString.length()) {
+            if (newString[i] == newString[k]) {
+                k++;
+                pi[i] = k;
+                i++;
+            } else {
+                if (k > 0) {
+                    k = pi[k - 1];
+                } else {
+                    pi[i] = 0;
+                    i++;
+                }
             }
-            if (s[i] == s[length]) {
-                length++;
-            }
-            prefixTable[i] = length;
         }
-        return prefixTable;
+        return pi.back();
     }
 };
