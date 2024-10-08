@@ -1,21 +1,20 @@
 class Solution {
 public:
     int minSwaps(string s) {
-        stack<char> stack;
-        int unbalanced = 0;
-        for (int i = 0; i < s.size(); i++) {
+        int stackSize = 0;
+        int n = s.size();
+
+        for (int i = 0; i < n; i++) {
             char ch = s[i];
-            // If an opening bracket is encountered, push it in the stack.
+            // If character is opening bracket, increment the stack size.
             if (ch == '[')
-                stack.push(ch);
+                stackSize++;
             else {
-                // If the stack is not empty, pop it.
-                if (!stack.empty()) stack.pop();
-                // Otherwise increase the count of unbalanced brackets.
-                else
-                    unbalanced++;
+                // If the character is closing bracket, and we have an opening
+                // bracket, decrease the stack size.
+                if (stackSize > 0) stackSize--;
             }
         }
-        return (unbalanced + 1) / 2;
+        return (stackSize + 1) / 2;
     }
 };
