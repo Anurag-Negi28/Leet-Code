@@ -1,43 +1,36 @@
 class Solution {
 public:
     int smallestChair(vector<vector<int>>& times, int targetFriend) {
-        priority_queue<pair<int, int>, vector<pair<int, int>>,
-                       greater<pair<int, int>>>
-            leavingQueue;
-        int targetArrival = times[targetFriend][0];
+        int n = times.size();
 
-        sort(times.begin(), times.end());
+        vector<int> order(n);
+        for (int i = 0; i < n; ++i) order[i] = i;
 
-        int nextChair = 0;  // Track next available chair number
-        set<int> availableChairs;
+        sort(order.begin(), order.end(), [&times](int a, int b) {
+            return times[a][0] < times[b][0];
+        });
 
-        for (auto time : times) {
-            int arrival = time[0];
-            int leave = time[1];
+        priority_queue<int, vector<int>, greater<int>> emptySeats;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> takenSeats;
 
-            // Free up chairs based on current time
-            while (!leavingQueue.empty() &&
-                   leavingQueue.top().first <= arrival) {
-                availableChairs.insert(leavingQueue.top().second);
-                leavingQueue.pop();
+        for (int i = 0; i < n; ++i) emptySeats.push(i);
+
+        for (int i : order) {
+            int arrival = times[i][0], leave = times[i][1];
+
+            while (!takenSeats.empty() && takenSeats.top().first <= arrival) {
+                emptySeats.push(takenSeats.top().second);
+                takenSeats.pop();
             }
 
-            int currentChair;
-            // Assign chair from available set or increment new chair
-            if (!availableChairs.empty()) {
-                currentChair = *availableChairs.begin();
-                availableChairs.erase(availableChairs.begin());
-            } else {
-                currentChair = nextChair++;
-            }
+            int seat = emptySeats.top();
+            emptySeats.pop();
 
-            // Push current leave time and chair
-            leavingQueue.push({leave, currentChair});
+            if (i == targetFriend) return seat;
 
-            // Check if it's the target friend
-            if (arrival == targetArrival) return currentChair;
+            takenSeats.push({leave, seat});
         }
 
-        return 0;
+        return -1;  
     }
 };
