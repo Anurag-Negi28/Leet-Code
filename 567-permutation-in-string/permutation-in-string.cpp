@@ -1,32 +1,34 @@
 class Solution {
 public:
-    static inline array<int, 26> count(string& s, int l, int r){
-        array<int, 26> freq={0};
-        for(int i=l; i<=r; i++)
-            freq[s[i]-'a']++;
-        return freq;
+    bool checkInclusion(string s1, string s2) {
+    if (s1.length() > s2.length()) return false;
+
+    vector<int> freq1(26, 0), freq2(26, 0);
+
+    // Count frequencies of characters in s1
+    for (char c : s1) {
+        freq1[c - 'a']++;
     }
 
-    static bool checkInclusion(string& s1, string& s2) {
-        const int n1=s1.size(), n2=s2.size();
-        if (n2<n1) return 0;
-        auto freq1=count(s1, 0, n1-1);
-        auto freq2=count(s2, 0, n1-1);
-        if (freq1==freq2) return 1;
-        for(int l=1, r=n1; r<n2; r++, l++){
-            freq2[s2[l-1]-'a']--;
-            freq2[s2[r]-'a']++;
-            if (freq2== freq1) return 1;
-        }
-        return 0;
+    // Initialize the first window in s2
+    for (int i = 0; i < s1.length(); i++) {
+        freq2[s2[i] - 'a']++;
+    }
+
+    // Check if the first window is a permutation
+    if (freq1 == freq2) return true;
+
+    // Slide the window over s2
+    for (int i = s1.length(); i < s2.length(); i++) {
+        // Add the new character to the window
+        freq2[s2[i] - 'a']++;
+        // Remove the old character from the window
+        freq2[s2[i - s1.length()] - 'a']--;
+
+        // Check if the current window is a permutation
+        if (freq1 == freq2) return true;
+    }
+
+    return false;
     }
 };
-
-
-
-auto init = []() {
-    ios::sync_with_stdio(false);
-    cin.tie(nullptr);
-    cout.tie(nullptr);
-    return 'c';
-}();
