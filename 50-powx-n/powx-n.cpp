@@ -1,9 +1,10 @@
 class Solution {
 public:
-    double myPow(double x, long long n) {
+    double myPow(double x, int n) {
         
         double result=1;
-        //result=pow(x,n);
+        result=pow(x,n);
+        /*
         bool isNegative=n<0;
         if(isNegative){
             n=-n;
@@ -16,5 +17,7 @@ public:
             n=n>>1;
         }
         return isNegative? 1.0/result: result;
+        */
+        return result;
     }
 };
